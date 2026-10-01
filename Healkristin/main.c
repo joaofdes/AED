@@ -4,7 +4,7 @@
 #include <math.h>
 
 int extension(char *filename, char *ext){
-    int *dot = strrchr(filename, '.'); //strrchr procura a ultima aparicao de '.' no filename, o filename é um pointer que aponta para o inicio do filename e percorre-o
+    char *dot = strrchr(filename, '.'); //strrchr procura a ultima aparicao de '.' no filename, o filename é um pointer que aponta para o inicio do filename e percorre-o
     if(!dot) return 0;
     return strcmp(dot, ext) == 0;
 
