@@ -4,7 +4,7 @@
 #include <math.h>
 
 int extension(char *filename, char *ext){
-    int *dot = strrchr(filename, '.');
+    int *dot = strrchr(filename, '.'); //strrchr procura a ultima aparicao de '.' no filename, o filename é um pointer que aponta para o inicio do filename e percorre-o
     if(!dot) return 0;
     return strcmp(dot, ext) == 0;
 
@@ -13,7 +13,7 @@ int extension(char *filename, char *ext){
 int main(int argc, char **argv){
     
     if(argc != 4){
-        return 0; //Se não tiver o .quest, .map e .position, não corre nem dá output
+        return 0; //se n tiver o .quest, .map e .position, não corre nem dá output
     }
 
     //verifica se as extensões estão corretas
