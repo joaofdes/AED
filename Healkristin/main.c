@@ -18,6 +18,29 @@ int main(int argc, char **argv){
 
     //verifica se as extensões estão corretas
     if(!extension(argv[1], ".quest")||!extension(argv[2], ".map")||!extension(argv[3], ".position")) return 0;
-     
+
+    FILE *f_quests = fopen(argv[1], "r");
+    FILE *f_map = fopen(argv[2], "r");
+    FILE *f_pos = fopen(argv[3], "r");
+
+    if(f_quests==NULL || f_map==NULL || f_pos==NULL){
+        if(f_quests) fclose(f_quests);
+        if(f_map) fclose(f_map);
+        if(f_pos) fclose(f_pos);
+    }
+
+    int C, L;
+    if(fscanf(f_map, "%d %d",&C,&L) != 2){
+        return 0;
+    }
+
+    int *id = (int*)malloc((C+1)*sizeof(int));
+    int *sz = (int*)malloc((C+1)*sizeof(int));
+    int num_clusters = C;
+
+    for(int i=1; i<=C; i++){
+        id[i]=i;
+        sz[i]=1;
+    }
     
 }
