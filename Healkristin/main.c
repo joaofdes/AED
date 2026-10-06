@@ -42,5 +42,33 @@ int main(int argc, char **argv){
         id[i]=i;
         sz[i]=1;
     }
+
+}
+
+typedef struct Node{
+    int city_id;
+    struct Node *next;
+} Node;
+
+int find(int i, int id[]){
+    if(i==id[i]) return i;
     
+    return id[i] = find(id[i], i); //Compression 
+}
+
+int union_sets(int p, int q, int id[], int sz[], int *num_clusters){
+    int root_p = find(p, id);
+    int root_q = find(q, id);
+
+    if(root_p == root_q) return;
+
+    if(sz[root_q]<sz[root_p]){
+        id[root_p] = root_q;
+        sz[root_q] += sz[root_p]; 
+    } else {
+        id[root_q] = root_p;
+        sz[root_p] += sz[root_q]; 
+    }
+    (*num_clusters)--;
+
 }
