@@ -10,6 +10,50 @@ int extension(char *filename, char *ext){
 
 }
 
+
+typedef struct Node{
+    int city_id;
+    struct Node *next;
+} Node;
+
+int find(int i, int id[]){
+    if(i==id[i]) return i;
+    
+    return id[i] = find(id[i], id); //Compression 
+}
+
+void union_sets(int p, int q, int id[], int sz[], int *num_clusters){
+    int root_p = find(p, id);
+    int root_q = find(q, id);
+
+    if(root_p == root_q) return;
+
+    if(sz[root_q]<sz[root_p]){
+        id[root_q] = root_p;
+        sz[root_p] += sz[root_q]; 
+    } else {
+        id[root_p] = root_q;
+        sz[root_q] += sz[root_p]; 
+    }
+    (*num_clusters)--;
+
+}
+
+void tails(Node **head, Node **tail, int city){
+    Node *new = (Node *)malloc(sizeof(Node));
+    new->city_id = city;
+    new->next = NULL;
+
+    if(*head==NULL){
+        *head = new;
+        *tail = new;
+    } else{
+        (*tail)->next = new;
+        *tail = new;
+    }
+    return;
+}
+
 int main(int argc, char **argv){
     
     if(argc != 4){
@@ -27,6 +71,7 @@ int main(int argc, char **argv){
         if(f_quests) fclose(f_quests);
         if(f_map) fclose(f_map);
         if(f_pos) fclose(f_pos);
+        return 0;
     }
 
     int C, L;
@@ -43,32 +88,37 @@ int main(int argc, char **argv){
         sz[i]=1;
     }
 
-}
-
-typedef struct Node{
-    int city_id;
-    struct Node *next;
-} Node;
-
-int find(int i, int id[]){
-    if(i==id[i]) return i;
-    
-    return id[i] = find(id[i], i); //Compression 
-}
-
-int union_sets(int p, int q, int id[], int sz[], int *num_clusters){
-    int root_p = find(p, id);
-    int root_q = find(q, id);
-
-    if(root_p == root_q) return;
-
-    if(sz[root_q]<sz[root_p]){
-        id[root_p] = root_q;
-        sz[root_q] += sz[root_p]; 
-    } else {
-        id[root_q] = root_p;
-        sz[root_p] += sz[root_q]; 
+    int u, v;
+    for(int i=1; i<=L; i++){
+        fscanf(f_map,"%d %d", &u, &v);
+        union_sets(u, v, id, sz, &num_clusters);
     }
-    (*num_clusters)--;
+
+
+    Node **head = (Node**)calloc(C+1, sizeof(Node*));
+    Node **tail = (Node**)calloc(C+1, sizeof(Node*));
+
+    for(int i = 1; i<=C; i++){
+        int root = find(i, id);
+        tails(&head[root],&tail[root],i);
+    }
+
+    fclose(f_quests);
+    fclose(f_map);
+    fclose(f_pos);
+
+    for(int i=1; i<=C; i++){
+        Node *current = head[i];
+        while(current != NULL){
+            Node *temp = current;
+            current = current->next;
+            free(temp);
+        }
+    }
+
+    free(id);
+    free(sz);
+    free(head);
+    free(tail);
 
 }
