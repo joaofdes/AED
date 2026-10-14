@@ -3,18 +3,17 @@
 #include <string.h>
 #include <math.h>
 
+typedef struct Node{
+    int city_id;
+    struct Node *next;
+} Node;
+
 int extension(char *filename, char *ext){
     char *dot = strrchr(filename, '.'); //strrchr procura a ultima aparicao de '.' no filename, o filename é um pointer que aponta para o inicio do filename e percorre-o
     if(!dot) return 0;
     return strcmp(dot, ext) == 0;
 
 }
-
-
-typedef struct Node{
-    int city_id;
-    struct Node *next;
-} Node;
 
 int find(int i, int id[]){
     if(i==id[i]) return i;
@@ -48,10 +47,39 @@ void tails(Node **head, Node **tail, int city){
         *head = new;
         *tail = new;
     } else{
-        (*tail)->next = new;
+        (*tail)->next =new;
         *tail = new;
     }
     return;
+}
+
+void task1(int num_clusters, FILE *f_results){
+    fprintf(f_results, "Task1 %d\n\n", num_clusters);
+}
+
+void task2(int C, int id[], Node **head, FILE *f_results){
+    fprintf(f_results, "Task2\n");
+    int *printed = (int*)calloc(C+1, sizeof(int));
+
+    for(int i = 1; i<=C; i++){
+        int root = find(i, id);
+    
+
+        if(!printed[root] && head[root] != NULL){
+            fprintf(f_results, "Cluster:");
+        
+            Node *current = head[root];
+            while(current != NULL){
+                fprintf(f_results, " %d", current->city_id);
+                current = current->next;
+            }
+            fprintf(f_results, "\n");
+        }
+        printed[root] = 1;
+    }
+
+    fprintf(f_results, "\n");
+    free(printed);
 }
 
 int main(int argc, char **argv){
@@ -61,13 +89,17 @@ int main(int argc, char **argv){
     }
 
     //verifica se as extensões estão corretas
-    if(!extension(argv[1], ".quest")||!extension(argv[2], ".map")||!extension(argv[3], ".position")) return 0;
+    if(!extension(argv[1], ".quests")||!extension(argv[2], ".map")||!extension(argv[3], ".position")){
+        printf("ai se eu te pego extensions\n");
+        return 0;
+    }
 
     FILE *f_quests = fopen(argv[1], "r");
     FILE *f_map = fopen(argv[2], "r");
     FILE *f_pos = fopen(argv[3], "r");
 
     if(f_quests==NULL || f_map==NULL || f_pos==NULL){
+        printf("bomboclatt wallahi erro extensions tbm\n");
         if(f_quests) fclose(f_quests);
         if(f_map) fclose(f_map);
         if(f_pos) fclose(f_pos);
@@ -94,19 +126,54 @@ int main(int argc, char **argv){
         union_sets(u, v, id, sz, &num_clusters);
     }
 
+    /*Criar o .results*/
+
+    char results_name[100];
+    strcpy(results_name, argv[1]);
+    
+    char *dot_ext = strrchr(results_name, '.');
+    if(dot_ext != NULL) strcpy(dot_ext,".results");
+
+    FILE *f_results = fopen(results_name, "w");
+    if(f_results == NULL){
+    
+        fclose(f_quests);
+        fclose(f_map);
+        fclose(f_pos);
+        free(id);
+        free(sz);
+        return 0;
+    }
+
+    /*-----------------*/
 
     Node **head = (Node**)calloc(C+1, sizeof(Node*));
-    Node **tail = (Node**)calloc(C+1, sizeof(Node*));
+    Node **tail = (Node**)calloc(C+1, sizeof(Node*));   
 
     for(int i = 1; i<=C; i++){
         int root = find(i, id);
         tails(&head[root],&tail[root],i);
     }
 
+    /*Actually fazer as tasks*/
+    
+    char task_name[20];
+
+    while(fscanf(f_quests, "%s", task_name)==1){
+        if(strcmp(task_name, "Task1") == 0){
+            task1(num_clusters, f_results);
+        
+        } else if(strcmp(task_name, "Task2") == 0){
+            task2(C, id, head, f_results);
+        }
+    
+    }
+    
     fclose(f_quests);
     fclose(f_map);
     fclose(f_pos);
-
+    fclose(f_results);
+    
     for(int i=1; i<=C; i++){
         Node *current = head[i];
         while(current != NULL){
