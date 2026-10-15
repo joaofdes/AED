@@ -1,7 +1,7 @@
 TARGET = healkristin
 CC = gcc
 CFLAGS = -Wall -std=c99 -g
-OBJS = main.o
+OBJS = main.o tasks.o list.o aux.o union_find.o
 TEST_DIR = BabyOnes
 
 $(TARGET): $(OBJS)
@@ -9,6 +9,18 @@ $(TARGET): $(OBJS)
 
 main.o: main.c
 	$(CC) $(CFLAGS) -c main.c -o main.o 
+
+tasks.o: tasks.c tasks.h union_find.h
+	$(CC) $(CFLAGS) -c tasks.c -o tasks.o
+
+aux.o: aux.c aux.h 
+	$(CC) $(CFLAGS) -c aux.c -o aux.o
+
+list.o: list.c list.o 
+	$(CC) $(CFLAGS) -c list.c -o list.o
+
+union_find.o: union_find.c union_find.h
+	$(CC) $(CFLAGS) -c union_find.c -o union_find.o
 
 clean:
 	rm -f $(OBJS) $(TARGET)
