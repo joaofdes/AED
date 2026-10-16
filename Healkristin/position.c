@@ -2,10 +2,8 @@
 #include <stdlib.h>
 #include "position.h"
 
-/* Le o ficheiro .position para os vetores x[] e y[] (indexados por 1..C).
- * Devolve 1 se valido; 0 se o formato estiver errado, alguma coordenada
- * estiver fora de [1..Xmax]x[1..Ymax], algum id estiver fora de 1..C
- * (ou repetido) ou faltar alguma cidade. */
+// le o .position pra x[] e y[]
+// da 1 se ta tudo ok e 0 se der merda (formato, coords fora dos limites, id fora de 1..C ou repetido, falta cidade)
 int read_positions(FILE *f_pos, int C, int x[], int y[]){
     int x_max, y_max;
     if(fscanf(f_pos, "%d %d", &x_max, &y_max) != 2) return 0;

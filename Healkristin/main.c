@@ -30,7 +30,7 @@ int main(int argc, char **argv){
     int *x = (int*)calloc(C+1, sizeof(int));
     int *y = (int*)calloc(C+1, sizeof(int));
 
-    /* Posicoes invalidas: terminar sem criar nenhum output */
+    // se as posicoes tao mal sai logo sem criar o results
     if(!read_positions(f_pos, C, x, y)){
         close_files(f_map, f_pos, f_quests, f_results);
         free(x); free(y);
