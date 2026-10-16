@@ -33,8 +33,8 @@ void task2(int C, int num_clusters,int id[], Node **head, FILE *f_results){
 }
 
 // cidade mais perto de city q nao ta no mesmo cluster
-// uso a distancia ao quadrado pq da a mesma ordem e evita sqrt
-// empate fica com o menor id pq so troco quando e estritamente menor
+// uso a distancia ao quadrado pq da a mesma ordem e assim n tenho de usar sqrt
+// empate fica com o menor id
 void task3(int C, int city, int id[], int x[], int y[], FILE *f_results){
     if(city < 1 || city > C){
         fprintf(f_results, "Task3 %d -2\n\n", city);
