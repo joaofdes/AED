@@ -3,7 +3,7 @@
 #include "position.h"
 
 // le o .position pra x[] e y[]
-// da 1 se ta tudo ok e 0 se der merda (formato, coords fora dos limites, id fora de 1..C ou repetido, falta cidade)
+// da 1 se ta tudo ok e 0 se der merda (formato, coords fora dos limites, id fora de 1..C ou repetido, faltar a cidade)
 int read_positions(FILE *f_pos, int C, int x[], int y[]){
     int x_max, y_max;
     if(fscanf(f_pos, "%d %d", &x_max, &y_max) != 2) return 0;
