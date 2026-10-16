@@ -1,14 +1,17 @@
 TARGET = healkristin
 CC = gcc
 CFLAGS = -Wall -std=c99 -g
-OBJS = main.o tasks.o list.o aux.o union_find.o
+OBJS = main.o tasks.o list.o aux.o union_find.o position.o
 TEST_DIR = BabyOnes
 
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET)
 
-main.o: main.c
+main.o: main.c position.h tasks.h
 	$(CC) $(CFLAGS) -c main.c -o main.o 
+
+position.o: position.c position.h
+	$(CC) $(CFLAGS) -c position.c -o position.o
 
 tasks.o: tasks.c tasks.h union_find.h
 	$(CC) $(CFLAGS) -c tasks.c -o tasks.o

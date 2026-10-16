@@ -32,17 +32,55 @@ void task2(int C, int num_clusters,int id[], Node **head, FILE *f_results){
     free(printed);
 }
 
-void all_tasks(FILE *f_quests, FILE *f_results, int C, int num_clusters, int id[], Node **head){
+/* Task3: cidade mais proxima de `city` que nao pertence ao seu cluster.
+ * Compara distancias ao quadrado (mesma ordem que a norma euclidiana, sem
+ * erros de arredondamento). Em empate, ganha o menor id (iteracao crescente
+ * com atualizacao so em distancia estritamente menor). */
+void task3(int C, int city, int id[], int x[], int y[], FILE *f_results){
+    if(city < 1 || city > C){
+        fprintf(f_results, "Task3 %d -2\n\n", city);
+        return;
+    }
+
+    int root = find(city, id);
+    int best = -2;
+    long long best_d = 0;
+
+    for(int j = 1; j <= C; j++){
+        if(find(j, id) == root) continue;
+
+        long long dx = x[j] - x[city];
+        long long dy = y[j] - y[city];
+        long long d = dx*dx + dy*dy;
+
+        if(best == -2 || d < best_d){
+            best = j;
+            best_d = d;
+        }
+    }
+
+    fprintf(f_results, "Task3 %d %d\n\n", city, best);
+}
+
+/* Executa as tarefas do .quests por ordem. Devolve 0 se o argumento da
+ * Task3 estiver em falta ou nao for um numero, 1 caso contrario. */
+int all_tasks(FILE *f_quests, FILE *f_results, int C, int num_clusters, int id[], Node **head, int x[], int y[]){
 
     char task_name[20];
 
-    while(fscanf(f_quests, "%s", task_name)==1){
+    while(fscanf(f_quests, "%19s", task_name)==1){
         if(strcmp(task_name, "Task1") == 0){
             task1(num_clusters, f_results);
         
         } else if(strcmp(task_name, "Task2") == 0){
             task2(C, num_clusters, id, head, f_results);
+
+        } else if(strcmp(task_name, "Task3") == 0){
+            int city;
+            if(fscanf(f_quests, "%d", &city) != 1) return 0;
+            task3(C, city, id, x, y, f_results);
         }
     
     }
+    return 1;
 }
