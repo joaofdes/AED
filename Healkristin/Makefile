@@ -2,7 +2,8 @@ TARGET = healkristin
 CC = gcc
 CFLAGS = -Wall -std=c99 -g
 OBJS = main.o tasks.o list.o aux.o union_find.o position.o
-TEST_DIR = BabyOnes
+TEST_DIR ?= BabyOnes
+TEST_DIRS = BabyOnes ChildOnes
 
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET)
@@ -28,12 +29,24 @@ union_find.o: union_find.c union_find.h
 clean:
 	rm -f $(OBJS) $(TARGET)
 
+# corre todos os testes das duas pastas
 test-all: $(TARGET)
+	@for d in $(TEST_DIRS); do \
+		for f in $$d/*.quests; do \
+			base=$${f%.quests}; \
+			echo "A executar teste: $$base"; \
+			./$(TARGET) $$base.quests $$base.map $$base.position; \
+		done; \
+	done
+
+# corre so os testes de uma pasta, ex: make test-dir TEST_DIR=ChildOnes
+test-dir: $(TARGET)
 	@for f in $(TEST_DIR)/*.quests; do \
 		base=$${f%.quests}; \
 		echo "A executar teste: $$base"; \
 		./$(TARGET) $$base.quests $$base.map $$base.position; \
 	done
 
+# corre um teste, ex: make run t=Child01 TEST_DIR=ChildOnes
 run: $(TARGET)
 	./$(TARGET) $(TEST_DIR)/$(t).quests $(TEST_DIR)/$(t).map $(TEST_DIR)/$(t).position
