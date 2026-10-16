@@ -29,7 +29,7 @@ union_find.o: union_find.c union_find.h
 clean:
 	rm -f $(OBJS) $(TARGET)
 
-# corre todos os testes das duas pastas
+# corre todos os testes das duas pastas, acho q n funciona super bem lowkey
 test-all: $(TARGET)
 	@for d in $(TEST_DIRS); do \
 		for f in $$d/*.quests; do \
@@ -39,7 +39,7 @@ test-all: $(TARGET)
 		done; \
 	done
 
-# corre so os testes de uma pasta, ex: make test-dir TEST_DIR=ChildOnes
+# corre os testes duma pasta em específico, usas tipo make test-dir TEST_DIR=ChildOnes
 test-dir: $(TARGET)
 	@for f in $(TEST_DIR)/*.quests; do \
 		base=$${f%.quests}; \
@@ -47,6 +47,6 @@ test-dir: $(TARGET)
 		./$(TARGET) $$base.quests $$base.map $$base.position; \
 	done
 
-# corre um teste, ex: make run t=Child01 TEST_DIR=ChildOnes
+# corre um teste, make run t=Child01 TEST_DIR=ChildOnes
 run: $(TARGET)
 	./$(TARGET) $(TEST_DIR)/$(t).quests $(TEST_DIR)/$(t).map $(TEST_DIR)/$(t).position
