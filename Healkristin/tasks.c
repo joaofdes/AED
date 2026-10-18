@@ -32,24 +32,36 @@ void task2(int C, int num_clusters,int id[], Node **head, FILE *f_results){
     free(printed);
 }
 
-// pocura a cidade mais perto do city (cidade referencia ou lá como é) que não esteja no mm cluster
+Cache *cache_create(int C){
+    Cache *cache = (Cache*)malloc(sizeof(Cache));
+    cache->near = (int*)calloc(C+1, sizeof(int));
+    cache->dist = (long long*)calloc(C+1, sizeof(long long));
+    cache->t4 = (int*)calloc(C+1, sizeof(int));
+    return cache;
+}
+
+void cache_free(Cache *cache){
+    free(cache->near);
+    free(cache->dist);
+    free(cache->t4);
+    free(cache);
+}
+
+// calcula (so se ainda nao tiver na cache) a cidade de fora mais perta de a
 // uso a distancia ao quadrado pq da a mesma coisa e assim n tenho de usar sqrt (e dizem no enunciado :P)
 // empate fica com o menor id
-void task3(int C, int city, int id[], int x[], int y[], FILE *f_results){
-    if(city < 1 || city > C){
-        fprintf(f_results, "Task3 %d -2\n\n", city);
-        return;
-    }
+static void nearest_outside(int C, int a, int id[], int x[], int y[], Cache *cache){
+    if(cache->near[a] != 0) return;
 
-    int root = find(city, id);
+    int root = find(a, id);
     int best = -2;
     long long best_d = 0;
 
     for(int j = 1; j <= C; j++){
         if(find(j, id) == root) continue;
 
-        long long dx = x[j] - x[city];
-        long long dy = y[j] - y[city];
+        long long dx = x[j] - x[a];
+        long long dy = y[j] - y[a];
         long long d = dx*dx + dy*dy;
 
         if(best == -2 || d < best_d){
@@ -58,43 +70,61 @@ void task3(int C, int city, int id[], int x[], int y[], FILE *f_results){
         }
     }
 
-    fprintf(f_results, "Task3 %d %d\n\n", city, best);
+    cache->near[a] = best;
+    cache->dist[a] = best_d;
+}
+
+// cidade mais perto do city que nao ta no mm cluster
+void task3(int C, int city, int id[], int x[], int y[], Cache *cache, FILE *f_results){
+    if(city < 1 || city > C){
+        fprintf(f_results, "Task3 %d -2\n\n", city);
+        return;
+    }
+
+    nearest_outside(C, city, id, x, y, cache);
+
+    fprintf(f_results, "Task3 %d %d\n\n", city, cache->near[city]);
 }
 
 // cidade de fora do cluster q ta mais perto do cluster todo (nao so da cidade dada)
-// pra cada cidade do cluster vejo todas as q nao sao do cluster e guardo a menor distancia ao quadrado
+// pra cada cidade do cluster uso a mais perta de fora (a mm da task3, vem da cache se ja tiver) e fico com a menor
 // empate fica com o menor id da cidade de fora
-void task4(int C, int city, int id[], int x[], int y[], Node **head, FILE *f_results){
+// a resposta fica guardada por cluster pq e igual pra todas as cidades dele
+void task4(int C, int city, int id[], int x[], int y[], Node **head, Cache *cache, FILE *f_results){
     if(city < 1 || city > C){
         fprintf(f_results, "Task4 %d -2\n\n", city);
         return;
     }
 
     int root = find(city, id);
-    int best = -2;
-    long long best_d = 0;
 
-    for(Node *a = head[root]; a != NULL; a = a->next){
-        for(int j = 1; j <= C; j++){
-            if(find(j, id) == root) continue;
+    if(cache->t4[root] == 0){
+        int best = -2;
+        long long best_d = 0;
 
-            long long dx = x[j] - x[a->city_id];
-            long long dy = y[j] - y[a->city_id];
-            long long d = dx*dx + dy*dy;
+        for(Node *a = head[root]; a != NULL; a = a->next){
+            int c = a->city_id;
+            nearest_outside(C, c, id, x, y, cache);
 
+            int j = cache->near[c];
+            if(j == -2) break;   // so ha um cluster, nao ha mais nada a ver
+
+            long long d = cache->dist[c];
             if(best == -2 || d < best_d || (d == best_d && j < best)){
                 best = j;
                 best_d = d;
             }
         }
+
+        cache->t4[root] = best;
     }
 
-    fprintf(f_results, "Task4 %d %d\n\n", city, best);
+    fprintf(f_results, "Task4 %d %d\n\n", city, cache->t4[root]);
 }
 
 // lê as tasks do .quests por ordem
 // da 0 se a Task3 ou a Task4 vier sem numero (aquele return 0 q perguntei em civil)
-int all_tasks(FILE *f_quests, FILE *f_results, int C, int num_clusters, int id[], Node **head, int x[], int y[]){
+int all_tasks(FILE *f_quests, FILE *f_results, int C, int num_clusters, int id[], Node **head, int x[], int y[], Cache *cache){
 
     char task_name[20];
 
@@ -108,12 +138,12 @@ int all_tasks(FILE *f_quests, FILE *f_results, int C, int num_clusters, int id[]
         } else if(strcmp(task_name, "Task3") == 0){
             int city;
             if(fscanf(f_quests, "%d", &city) != 1) return 0;
-            task3(C, city, id, x, y, f_results);
+            task3(C, city, id, x, y, cache, f_results);
 
         } else if(strcmp(task_name, "Task4") == 0){
             int city;
             if(fscanf(f_quests, "%d", &city) != 1) return 0;
-            task4(C, city, id, x, y, head, f_results);
+            task4(C, city, id, x, y, head, cache, f_results);
         }
     
     }

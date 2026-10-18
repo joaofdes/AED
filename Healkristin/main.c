@@ -67,11 +67,14 @@ int main(int argc, char **argv){
         tails(&head[root], &tail[root], i);
     }
 
-    all_tasks(f_quests, f_results, C, num_clusters, id, head, x, y);
+    Cache *cache = cache_create(C);
+
+    all_tasks(f_quests, f_results, C, num_clusters, id, head, x, y, cache);
     
     close_files(f_map, f_pos, f_quests, f_results);
     
     free_lists(head, C);
+    cache_free(cache);
 
     free(id); free(sz);
     free(head); free(tail);
