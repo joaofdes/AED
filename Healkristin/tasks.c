@@ -61,8 +61,39 @@ void task3(int C, int city, int id[], int x[], int y[], FILE *f_results){
     fprintf(f_results, "Task3 %d %d\n\n", city, best);
 }
 
+// cidade de fora do cluster q ta mais perto do cluster todo (nao so da cidade dada)
+// pra cada cidade do cluster vejo todas as q nao sao do cluster e guardo a menor distancia ao quadrado
+// empate fica com o menor id da cidade de fora
+void task4(int C, int city, int id[], int x[], int y[], Node **head, FILE *f_results){
+    if(city < 1 || city > C){
+        fprintf(f_results, "Task4 %d -2\n\n", city);
+        return;
+    }
+
+    int root = find(city, id);
+    int best = -2;
+    long long best_d = 0;
+
+    for(Node *a = head[root]; a != NULL; a = a->next){
+        for(int j = 1; j <= C; j++){
+            if(find(j, id) == root) continue;
+
+            long long dx = x[j] - x[a->city_id];
+            long long dy = y[j] - y[a->city_id];
+            long long d = dx*dx + dy*dy;
+
+            if(best == -2 || d < best_d || (d == best_d && j < best)){
+                best = j;
+                best_d = d;
+            }
+        }
+    }
+
+    fprintf(f_results, "Task4 %d %d\n\n", city, best);
+}
+
 // lê as tasks do .quests por ordem
-// da 0 se a Task3 vier sem numero (aquele return 0 q perguntei em civil)
+// da 0 se a Task3 ou a Task4 vier sem numero (aquele return 0 q perguntei em civil)
 int all_tasks(FILE *f_quests, FILE *f_results, int C, int num_clusters, int id[], Node **head, int x[], int y[]){
 
     char task_name[20];
@@ -78,6 +109,11 @@ int all_tasks(FILE *f_quests, FILE *f_results, int C, int num_clusters, int id[]
             int city;
             if(fscanf(f_quests, "%d", &city) != 1) return 0;
             task3(C, city, id, x, y, f_results);
+
+        } else if(strcmp(task_name, "Task4") == 0){
+            int city;
+            if(fscanf(f_quests, "%d", &city) != 1) return 0;
+            task4(C, city, id, x, y, head, f_results);
         }
     
     }

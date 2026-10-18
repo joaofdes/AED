@@ -1,6 +1,6 @@
 TARGET = healkristin
 CC = gcc
-CFLAGS = -Wall -std=c99 -g
+CFLAGS = -Wall -std=c99 -O3
 OBJS = main.o tasks.o list.o aux.o union_find.o position.o
 TEST_DIR ?= BabyOnes
 TEST_DIRS = BabyOnes ChildOnes
