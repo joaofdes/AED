@@ -20,7 +20,7 @@ tasks.o: tasks.c tasks.h union_find.h
 aux.o: aux.c aux.h 
 	$(CC) $(CFLAGS) -c aux.c -o aux.o
 
-list.o: list.c list.o 
+list.o: list.c list.h
 	$(CC) $(CFLAGS) -c list.c -o list.o
 
 union_find.o: union_find.c union_find.h
